@@ -19,10 +19,9 @@ git clone https://github.com/dlk3/autokey --branch wayland
 ```
 git clone https://github.com/autokey/autokey --branch develop
 ```
-## 2a) Install Ubuntu system prereqs:
 ```
 sudo apt update
-sudo apt install make build-essential libcairo2-dev python3-venv gnome-shell-extension-manager -y
+sudo apt install make build-essential libcairo2-dev python3-venv gnome-shell-extension-manager libgirepository-2.0-dev libayatana-appindicator3-dev -y
 cd ~/src/autokey
 xargs -a apt-requirements.txt sudo apt install -y
 ```
@@ -67,7 +66,7 @@ python3 -m venv ~/venv
 source ~/venv/bin/activate
 
 #  Install prerequisite Python modules into the virtual environment
-pip install packaging pyasyncore evdev
+pip install packaging pyasyncore evdev pystray
 cd ~/src/autokey
 pip install -r pip-requirements.txt
 ```
