@@ -10,7 +10,7 @@ def dependencies():
         "sudo", "apt", "install",
         "make", "build-essential", "libcairo2-dev",
         "python3-venv", "gnome-shell-extension-manager",
-        "libgirepository-2.0-dev", "libayatana-appindicator3-dev",
+        "libgirepository-2.0-dev", "libayatana-appindicator3-dev", "libayatana-appindicator-glib-dev", "gnome-shell-extension-prefs"
         "-y"
     ], check= True)
     subprocess.run([

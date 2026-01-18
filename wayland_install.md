@@ -42,13 +42,14 @@ xargs -a rpm-requirements.txt sudo dnf -y install
 ## 3) Post-Restart
 
 ### 3.1) Enable the GNOME Shell extension and add your userid to the "input" user group
-Run this script:
+
+Run the `autokey-user-config` script and logout when prompted:
 
 ```
 ./autokey-user-config
+read -n1 -r -p "Press any key to log off..." key
+gnome-session-quit --logout
 ```
-
-You will be prompted to log off and log back on again after running that script.
 
 ###  3.2) Install AutoKey in a Python virtual environment
 

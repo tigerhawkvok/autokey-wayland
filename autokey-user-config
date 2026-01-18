@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
 #  Copyright (C) 2024  David King <dave@daveking.com>
 #
@@ -33,7 +33,7 @@ if [ $RC -ne 0 ]; then
   echo "please run AutoKey with the \"-v\" option and examine the debug output to"
   echo "determine the cause of the problem."
   exit $RC
-elif [[ ! "$INFO" =~ "Enabled: Yes" ]]; then 
+elif [[ ! "$INFO" =~ "Enabled: Yes" ]]; then
   gnome-extensions enable $EXT_NAME
   RC=$?
   if [ $RC -ne 0 ]; then
@@ -56,19 +56,19 @@ if [[ ! "$(id -Gn)" =~ "input" ]]; then
   RC=$?
   if [ $RC -eq 0 ]; then
     echo
-    echo "Your userid is now a member of the \"input\" user group but you must log off" 
+    echo "Your userid is now a member of the \"input\" user group but you must log off"
     echo "and back on to make the group active for your userid.  Please do that before"
     echo "running AutoKey again."
     echo
   else
     echo
-	echo "The user group update failed."
-	echo
+    echo "The user group update failed."
+    echo
     echo "This probably indicates that the AutoKey installation on your system did not"
     echo "complete successfully.  You may want to consult the AutoKey installation"
     echo "documentation and try uninstalling and reinstalling AutoKey."
     exit $RC
-  fi 
+  fi
 fi
 
 echo "${USER} has been successfully configured to use AutoKey"
