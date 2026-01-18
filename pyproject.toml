@@ -18,4 +18,5 @@ dependencies = [
     "python-xlib>=0.33",
     "pyudev>=0.24.4",
     "qscintilla>=2.14.1",
+    "ruff>=0.14.13",
 ]

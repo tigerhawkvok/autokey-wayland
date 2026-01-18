@@ -3,6 +3,7 @@
 # sec, usec, type, code, value
 
 
+from collections.abc import Iterable
 import typing
 import threading
 import queue
@@ -21,7 +22,6 @@ from autokey.model.button import Button
 from autokey.model.phrase import SendMode
 from autokey.model.key import Key
 
-import evdev
 from evdev import ecodes as e
 
 from autokey.autokey_app import AutokeyApplication
@@ -262,6 +262,10 @@ class UInputInterface(threading.Thread, GnomeMouseReadInterface, AbstractSysInte
         # creating this before creating the new uinput device !important
         devices = self.get_devices()
 
+        def getSettingsList(_setting) -> Iterable:
+            settingsCollection = cm.ConfigManager.SETTINGS.get(_setting)
+            return settingsCollection if settingsCollection is not None else []
+
         for dev in devices:
             #logger.debug(f"Found device: {dev.name}")
             #  Close any existing fake uinput devices, which would likely
@@ -293,7 +297,7 @@ class UInputInterface(threading.Thread, GnomeMouseReadInterface, AbstractSysInte
                     #logger.debug("Mouse: {}, Path: {}".format(mouse.name, mouse.path))
                 except Exception as error:
                     logger.error(f"Could not grab mouse device  \"{dev.name}\" from list of devices found on system: {error}")
-            elif dev.name in cm.ConfigManager.SETTINGS[cm_constants.KEYBOARD]:
+            elif dev.name in getSettingsList(cm_constants.KEYBOARD):
                 try:
                     #logger.debug("Device name matches a keyboard listed in the config file, grabbing it.")
                     keyboard = self.grab_device(devices, dev.name)
@@ -303,7 +307,7 @@ class UInputInterface(threading.Thread, GnomeMouseReadInterface, AbstractSysInte
                     #logger.debug("Keyboard: {}, Path: {}".format(keyboard.name, keyboard.path))
                 except Exception as error:
                     logger.error(f"Could not grab keyboard device \"{dev.name}\" from configuration settings: {error}")
-            elif dev.name in cm.ConfigManager.SETTINGS[cm_constants.MOUSE]:
+            elif dev.name in getSettingsList(cm_constants.MOUSE):
                 try:
                     #logger.debug("Device name matches a mouse listed in the config file, grabbing it.")
                     mouse = self.grab_device(devices, dev.name)
@@ -1012,7 +1016,8 @@ class UInputInterface(threading.Thread, GnomeMouseReadInterface, AbstractSysInte
                     return_device = evdev.InputDevice(device.path)
                 else:
                     device.close()
-
+        if not return_device:
+            raise Exception(f"Could not find device matching descriptor: {descriptor}")
         return return_device
 
 

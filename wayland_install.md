@@ -56,7 +56,7 @@ gnome-session-quit --logout
 UV will handle the virtual environment for you.  Run this command:
 
 ```
-uv sync --all-packages --all-groups --all-extras --frozen
+uv sync --all-packages --all-groups --all-extras --frozen  --link-mode=copy
 ```
 
 If this fails, you may need to run `uv lock` first, but this will re-sync dependencies so versions may change.
