@@ -3,7 +3,7 @@
 # sec, usec, type, code, value
 
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 import typing
 import threading
 import queue
@@ -187,7 +187,7 @@ class UInputInterface(threading.Thread, GnomeMouseReadInterface, AbstractSysInte
         self.device_paths = []
         #self.keyboard = None
         #self.mouse = None
-        self.capabilities = None
+        self.capabilities = None # type: ignore
         time.sleep(1)
 
         # Event loop
@@ -210,7 +210,7 @@ class UInputInterface(threading.Thread, GnomeMouseReadInterface, AbstractSysInte
             # creating a uinput device with the combined capabilities of the user's mouse and keyboard
             # this will undoubtedly cause issues if user attempts to send signals not supported by their devices
             self.ui = evdev.UInput.from_device(*self.device_paths, name="autokey mouse and keyboard")
-            self.capabilities = self.ui.capabilities(verbose=True)
+            self.capabilities:Mapping = self.ui.capabilities(verbose=True)
             logger.debug("UInput device capabilities: {}".format(self.capabilities))
             logger.info("Supports ABS Movement: {}".format(self.supports_abs()))
             logger.info("Supports REL Movement: {}".format(self.supports_rel()))
@@ -219,6 +219,9 @@ class UInputInterface(threading.Thread, GnomeMouseReadInterface, AbstractSysInte
             logger.error("Check out how to resolve this issue here: https://github.com/philipl/evdevremapkeys/issues/24")
             raise Exception
             #print("Unable to create UInput device. {}".format(ex))
+
+        if typing.TYPE_CHECKING:
+            assert self.capabilities is not None
 
         GnomeMouseReadInterface.__init__(self)
         logger.debug("Screen size: {}".format(self.mediator.windowInterface.get_screen_size()))
@@ -391,7 +394,7 @@ class UInputInterface(threading.Thread, GnomeMouseReadInterface, AbstractSysInte
             raise Exception(f"Your userid is not in the \"input\" user group.  Add yourself to that group and try again.  Run the command \"sudo usermod -a -G input {user}\"")
 
     @queue_method(queue)
-    def send_mouse_click(self, xCoord, yCoord, button: Button, relative):
+    def send_mouse_click(self, xCoord, yCoord, button: Button, relative:bool= False):
         self.move_cursor(xCoord, yCoord, relative)
 
         keycode = self.btn_map[button][0]
@@ -959,7 +962,7 @@ class UInputInterface(threading.Thread, GnomeMouseReadInterface, AbstractSysInte
 
             pass
         except Exception as e:
-            logger.warning("Error sending modified key %r %r: %s", modifiers, keyName, str(e))
+            logger.warning("Error sending modified key %r %r: %s", modifiers, key, str(e))
 
 
     def cancel(self):
@@ -1031,32 +1034,33 @@ class UInputInterface(threading.Thread, GnomeMouseReadInterface, AbstractSysInte
         return (0, false)
         """
         #TODO this could probably do with an optimization pass
-        if type(key)==str and "KEY_" in key[:4]: #if it is a "KEY_A" type value return evdev int from map
-            # print("Type str")
-            return self.inv_map[key], False
-        elif type(key)==list and "BTN_" in key[0][:4]:
+        if isinstance(key, str):
+            if "KEY_" in key[:4]: #if it is a "KEY_A" type value return evdev int from map
+                # print("Type str")
+                return self.inv_map[key], False
+            if "BTN_" in key[:4]:
+                return self.inv_btn_map[key], False
+            if len(key)==1:
+                #print("Type single char", key)
+                evdev_key = "KEY_"+key.upper()
+                if key in self.shifted_chars:
+                    return self.inv_map[self.shifted_chars[key]], True
+                elif key in self.char_map:
+                    return self.inv_map[self.char_map[key]], False
+                elif evdev_key in self.inv_map:
+                    return self.inv_map[evdev_key], key.isupper()
+                elif evdev_key in self.char_map:
+                    return self.inv_map[self.char_map[evdev_key]], key.isupper()
+            elif isinstance(key, str) and key in self.autokey_map:
+                # print("Type <autokey>", key)
+                return self.inv_map[self.autokey_map[key]], False
+        elif isinstance(key, list) and "BTN_" in key[0][:4]:
             return self.inv_btn_map[key[0]], False
-        elif type(key)==str and "BTN_" in key[:4]:
-            return self.inv_btn_map[key], False
-        elif type(key)==Button:
+        elif isinstance(key, Button):
             return self.btn_map[key]
-        elif type(key)==int: #if it is type int it should be a evdev raw value
+        elif isinstance(key, int): #if it is type int it should be a evdev raw value
             # print("Type int")
             return key, False
-        elif len(key)==1:
-            #print("Type single char", key)
-            evdev_key = "KEY_"+key.upper()
-            if key in self.shifted_chars:
-                return self.inv_map[self.shifted_chars[key]], True
-            elif key in self.char_map:
-                return self.inv_map[self.char_map[key]], False
-            elif evdev_key in self.inv_map:
-                return self.inv_map[evdev_key], key.isupper()
-            elif evdev_key in self.char_map:
-                return self.inv_map[self.char_map[evdev_key]], key.isupper()
-        elif type(key)==str and key in self.autokey_map:
-            # print("Type <autokey>", key)
-            return self.inv_map[self.autokey_map[key]], False
         return (0, False)
 
     def initialise(self):
