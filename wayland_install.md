@@ -5,88 +5,76 @@ This version of AutoKey still supports X11 desktops.  You should be able to swit
 
 Basic testing of this version of AutoKey has been done on:
 - Ubuntu 24.04 (GNOME Shell 46.0) - under Wayland and X11
-- Fedora 40 Workstation (GNOME Shell 46.6) - under Wayland and X11 
+- Fedora 40 Workstation (GNOME Shell 46.6) - under Wayland and X11
 - Fedora 41 Workstation (GNOME Shell 47.2) - under Wayland only, X11 is deprecated in this release
 
-## 1) Clone the development version of AutoKey
+
+## 1) Install the "uv" tool
+
+`sudo snap install astral-uv --classic`
+
+
+## 2) Clone autokey-wayland repository and run the setup script
 ```
-#  Clone the "wayland" branch from my fork of the AutoKey repository
-mkdir -p ~/src
-cd ~/src
-git clone https://github.com/dlk3/autokey --branch wayland
+#  Clone autokey-wayland repository
+# Start where you want the code to live, eg, ~/script_src
+git clone https://github.com/dlk3/autokey-wayland
 ```
-**NOTE** Assuming the pull request with my updates gets merged into the develop branch of the master AutoKey repository, once that is done the code can be cloned from that repo as well, using this command:
+For all subsequent commands, make sure you're in the repository directory
+
 ```
-git clone https://github.com/autokey/autokey --branch develop
+cd autokey-wayland
 ```
+
+Run the python setup script to install AutoKey and its GNOME Shell extension. You'll be prompted to restart your computer at the end of the setup.
+
 ```
-sudo apt update
-sudo apt install make build-essential libcairo2-dev python3-venv gnome-shell-extension-manager libgirepository-2.0-dev libayatana-appindicator3-dev -y
-cd ~/src/autokey
-xargs -a apt-requirements.txt sudo apt install -y
+python3 ./setupAutokeyUbuntu.py
 ```
-## 2b) Install Fedora system prereqs:
+
+## 2b) Install Fedora system prereqs when prompted, if applicable:
 ```
 sudo dnf -y group install c-development
 sudo dnf -y install git make cmake dbus-glib-devel python3-devel cairo-devel gobject-introspection-devel cairo-gobject-devel
 cd ~/src/autokey
 xargs -a rpm-requirements.txt sudo dnf -y install
 ```
-## 3) Install AutoKey
-**NOTE** If you only ever run under X11 and don't need Wayland support you can skip the next four steps and jump down to the "3.5 Install AutoKey in a Python virtual environment" step.
-###  3.1) Install the autokey-gnome-extension GNOME Shell extension
-```
-cd ~/src/autokey/autokey-gnome-extension
-make
-gnome-extensions install autokey-gnome-extension@autokey.zip
-```
-###  3.2) Make system configuration changes to enable use of the uinput interface
-```
-#  Add a new udev rule configuration file that grants the "input" user group access to the /dev/uinput kernel device (copy these three lines together as one into a terminal window and press enter)
-sudo tee /etc/udev/rules.d/10-autokey.rules > /dev/null <<EOF
-KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", TAG+="uaccess", GROUP="input", MODE="0660"
-EOF
-```
-### 3.3) Reboot
-The GNOME Shell extension and the UDEV changes we have made require a system reboot to come into effect.
-```
-sudo shutdown -r now
-```
-### 3.4) Enable the GNOME Shell extension and add your userid to the "input" user group
-Run this script:
-```
-~/src/autokey/autokey-user-config
-```
-You will be prompted to log off and log back on again after running that script.
-###  3.5) Install AutoKey in a Python virtual environment
-Using a virtual environment is highly recommended to ensure that the modules installed to support AutoKey do not conflict with your default Python environment.
-```
-#  Create the virtual environment in the ~/venv directory and activate it
-python3 -m venv ~/venv
-source ~/venv/bin/activate
+## 3) Post-Restart
 
-#  Install prerequisite Python modules into the virtual environment
-pip install packaging pyasyncore evdev pystray
-cd ~/src/autokey
-pip install -r pip-requirements.txt
+### 3.1) Enable the GNOME Shell extension and add your userid to the "input" user group
+Run this script:
+
 ```
-### 3.6) Run AutoKey
+./autokey-user-config
+```
+
+You will be prompted to log off and log back on again after running that script.
+
+###  3.2) Install AutoKey in a Python virtual environment
+
+UV will handle the virtual environment for you.  Run this command:
+
+```
+uv sync --all-packages --all-groups --all-extras --frozen
+```
+
+If this fails, you may need to run `uv lock` first, but this will re-sync dependencies so versions may change.
+
+### 3.3) [Optional] Backup existing AutoKey configuration
 ```
 #  Backup your existing autokey configuration files, this new version of autokey will modify them:
 cp -R ~/.config/autokey ~/.config/autokey-backup
+```
 
+### 3.4)  Start AutoKey for the first time
+
+```
 #  Run autokey
-cd ~/src/autokey/lib
-python3 -m autokey.gtkui -vc
+uv run --directory lib python -m autokey.gtkui -vc
 ```
-After AutoKey has been terminated, the Python virtual environment can be deactivated by entering the command ```deactivate``` at the command prompt, or by exiting the terminal window.
 
-On subsequent runs, start AutoKey with these commands:
-```
-source ~/venv/bin/activate
-cd ~/src/autokey/lib
-python3 -m autokey.gtkui -v
-```
+On subsequent runs, start AutoKey with the same command.
+
 **Important** When AutoKey starts, it does not open a window unless this is your very first time running AutoKey, i.e., the ```~/.config/autokey``` directory does not exist.  Instead, it places an "A" icon in the system tray through which its main window and other functions can be accessed.
 
 If you are a GNOME desktop user, your desktop may not have a system tray and therefore it will appear that nothing happened when you started AutoKey.  To use AutoKey effectively you should install a GNOME Shell extension that adds a system tray to your desktop.  My personal favorite extension for this purpose is "AppIndicator and KStatusNotifierItem Support by 3v1n0" but there are other choices.  Ubuntu, for example, comes with the "Ubuntu Appindicators" extension already installed so this isn't a problem there.  Go to [https://extensions.gnome.org](https://extensions.gnome.org) to find, install, and manage GNOME Shell extensions on your desktop.
@@ -129,7 +117,7 @@ First step, you need the names of the devices you want to add.  When AutoKey is 
         HDA Intel PCH Line Out CLFE
         HDA Intel PCH Front Headphone
         Logitech K400
-2025-01-01 17:13:02,386 DEBUG - autokey.uinput_interface - I grabbed these devices from that list: 
+2025-01-01 17:13:02,386 DEBUG - autokey.uinput_interface - I grabbed these devices from that list:
 ```
 In my case, none of my devices have the words "keyboard" or "mouse" in their names so AutoKey wasn't able to recognize and didn't grab anything.  I got an error message saying that AutoKey couldn't find a keyboard device on my system.
 
@@ -154,7 +142,7 @@ The Logitech K400 is a USB keyboard that I don't always have attached to the sys
 
 Now, when I restart AutoKey I see this in the log:
 
-    2025-01-01 17:15:27,125 DEBUG - autokey.uinput_interface - I grabbed these devices from that list: 
+    2025-01-01 17:15:27,125 DEBUG - autokey.uinput_interface - I grabbed these devices from that list:
             Logitech K330
             Logitech K400
             Logitech ERGO M575
