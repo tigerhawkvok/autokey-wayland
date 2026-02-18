@@ -1,0 +1,26 @@
+{
+    "type": "script",
+    "description": "Ctrl+C / Kill Emacs (C-x C-c)",
+    "modes": [2],
+    "usageCount": 0,
+    "showInTrayMenu": false,
+    "prompt": false,
+    "omitTrigger": false,
+    "abbreviation": {
+        "abbreviations": [],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": false,
+        "triggerInside": false,
+        "wordChars": "[\\w]"
+    },
+    "hotkey": {
+        "modifiers": ["<ctrl>"],
+        "hotKey": "c"
+    },
+    "filter": {
+        "regex": null,
+        "isRecursive": false
+    },
+    "store": {}
+}

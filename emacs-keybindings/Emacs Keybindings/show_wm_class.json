@@ -1,0 +1,26 @@
+{
+    "type": "script",
+    "description": "Show WM Class (Debug)",
+    "modes": [2],
+    "usageCount": 0,
+    "showInTrayMenu": true,
+    "prompt": false,
+    "omitTrigger": false,
+    "abbreviation": {
+        "abbreviations": [],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": false,
+        "triggerInside": false,
+        "wordChars": "[\\w]"
+    },
+    "hotkey": {
+        "modifiers": ["<ctrl>", "<alt>", "<shift>"],
+        "hotKey": "w"
+    },
+    "filter": {
+        "regex": null,
+        "isRecursive": false
+    },
+    "store": {}
+}

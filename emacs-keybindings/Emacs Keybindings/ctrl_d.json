@@ -1,0 +1,26 @@
+{
+    "type": "script",
+    "description": "Ctrl+D Duplicate Line",
+    "modes": [2],
+    "usageCount": 0,
+    "showInTrayMenu": false,
+    "prompt": false,
+    "omitTrigger": false,
+    "abbreviation": {
+        "abbreviations": [],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": false,
+        "triggerInside": false,
+        "wordChars": "[\\w]"
+    },
+    "hotkey": {
+        "modifiers": ["<ctrl>"],
+        "hotKey": "d"
+    },
+    "filter": {
+        "regex": null,
+        "isRecursive": false
+    },
+    "store": {}
+}

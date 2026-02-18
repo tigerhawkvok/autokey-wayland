@@ -1,0 +1,26 @@
+{
+    "type": "script",
+    "description": "h / Select All (C-x h)",
+    "modes": [2],
+    "usageCount": 0,
+    "showInTrayMenu": false,
+    "prompt": false,
+    "omitTrigger": false,
+    "abbreviation": {
+        "abbreviations": [],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": false,
+        "triggerInside": false,
+        "wordChars": "[\\w]"
+    },
+    "hotkey": {
+        "modifiers": [],
+        "hotKey": "h"
+    },
+    "filter": {
+        "regex": null,
+        "isRecursive": false
+    },
+    "store": {}
+}

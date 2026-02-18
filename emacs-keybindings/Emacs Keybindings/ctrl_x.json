@@ -1,0 +1,26 @@
+{
+    "type": "script",
+    "description": "Ctrl+X Prefix",
+    "modes": [2],
+    "usageCount": 0,
+    "showInTrayMenu": false,
+    "prompt": false,
+    "omitTrigger": false,
+    "abbreviation": {
+        "abbreviations": [],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": false,
+        "triggerInside": false,
+        "wordChars": "[\\w]"
+    },
+    "hotkey": {
+        "modifiers": ["<ctrl>"],
+        "hotKey": "x"
+    },
+    "filter": {
+        "regex": null,
+        "isRecursive": false
+    },
+    "store": {}
+}

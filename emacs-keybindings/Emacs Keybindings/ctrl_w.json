@@ -1,0 +1,26 @@
+{
+    "type": "script",
+    "description": "Ctrl+W Kill Region",
+    "modes": [2],
+    "usageCount": 0,
+    "showInTrayMenu": false,
+    "prompt": false,
+    "omitTrigger": false,
+    "abbreviation": {
+        "abbreviations": [],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": false,
+        "triggerInside": false,
+        "wordChars": "[\\w]"
+    },
+    "hotkey": {
+        "modifiers": ["<ctrl>"],
+        "hotKey": "w"
+    },
+    "filter": {
+        "regex": null,
+        "isRecursive": false
+    },
+    "store": {}
+}
